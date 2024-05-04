@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
-import '../utils/custom_msg.dart';
+import '../widgets/custom_msg.dart';
 
 class StorageServices {
   Future<String> uploadImageToStorage(BuildContext context, File? image) async {

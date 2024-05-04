@@ -1,21 +1,29 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:smart_mart_supplier_side/model/seller_model.dart';
 
-class UserController extends ChangeNotifier {
-  String _username = '';
-  String _userImage = '';
+class SellerController extends ChangeNotifier {
+  SellerModel? _sellerModel;
 
-  String get username => _username;
-  String get userImage => _userImage;
+  SellerModel get sellerModel => _sellerModel!;
 
   getUser() async {
-    DocumentSnapshot snap =
-        await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).get();
-    if (snap.exists) {
-      _username = snap['userName'];
-      _userImage = snap['image'];
-      notifyListeners();
+    try {
+      await FirebaseFirestore.instance
+          .collection('sellers')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .snapshots()
+          .listen((snap) {
+        if (snap.exists) {
+          _sellerModel = SellerModel.fromDocument(snap);
+        } else {
+          throw 'No Seller Found';
+        }
+        notifyListeners();
+      });
+    } on FirebaseException catch (e) {
+      print(e);
     }
   }
 }

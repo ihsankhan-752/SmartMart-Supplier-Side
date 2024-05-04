@@ -51,6 +51,8 @@ dependencies:
   provider: any
   flutter_svg: any
   flutter_local_notifications: any
+  intl: ^0.19.0
+  pie_chart: ^5.4.0
 
 
 dev_dependencies:
@@ -91,10 +93,10 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+  fonts:
+    - family: Mirador
+      fonts:
+        - asset: assets/fonts/Mirador Bold.otf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-import '../utils/colors.dart';
+import '../constants/colors.dart';
 
 class LogoWidget extends StatelessWidget {
-  const LogoWidget({super.key});
+  final double? fontSize;
+  const LogoWidget({super.key, this.fontSize});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        "SmartMart",
-        style: GoogleFonts.poppins(
-          fontSize: 45,
+        "SmartMart\nSupplier Center",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: fontSize ?? 40,
+          fontFamily: 'Mirador',
           fontWeight: FontWeight.bold,
           color: AppColors.primaryColor,
         ),

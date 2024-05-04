@@ -1,43 +1,53 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_mart_supplier_side/controllers/loading_controller.dart';
-import 'package:smart_mart_supplier_side/services/storage_services.dart';
-import 'package:smart_mart_supplier_side/utils/custom_msg.dart';
+import 'package:smart_mart_supplier_side/widgets/custom_msg.dart';
 
 import '../main.dart';
-import '../model/user_model.dart';
-import '../views/custom_navigation_bar/custom_navigation.dart';
+import '../model/seller_model.dart';
+import '../screens/custom_navbar/custom_navbar.dart';
+import '../screens/store/store_adding_screen.dart';
 
 class AuthServices {
-  Future<String> signUp(
-      {BuildContext? context, String? email, String? password, String? username, File? selectedImage}) async {
-    String response = "";
-    try {
-      var _auth = FirebaseAuth.instance;
-      _auth.createUserWithEmailAndPassword(email: email!, password: password!);
-      String image = await StorageServices().uploadImageToStorage(context!, selectedImage);
-      UserModel userModel = UserModel(
-        uid: FirebaseAuth.instance.currentUser!.uid,
-        email: email,
-        username: username,
-        image: image,
-        isSuppler: false,
-      );
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .set(userModel.toMap());
-      response = 'success';
-      navigateToPage(context, CustomNavigationBar());
-    } on FirebaseException catch (e) {
-      response = e.message.toString();
+  Future<void> signUp({
+    BuildContext? context,
+    String? email,
+    String? password,
+    String? sellerName,
+    String? address,
+    int? contact,
+  }) async {
+    if (sellerName!.isEmpty || email!.isEmpty || contact == null || address!.isEmpty || password!.isEmpty) {
+      showCustomMessage(context!, "All Fields required");
+    } else {
+      try {
+        Provider.of<LoadingController>(context!, listen: false).setLoading(true);
+
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+        SellerModel supplierModel = SellerModel(
+          uid: FirebaseAuth.instance.currentUser!.uid,
+          email: email,
+          sellerName: sellerName,
+          image: "",
+          address: address,
+          phone: contact,
+          memberSince: DateTime.now(),
+        );
+        await FirebaseFirestore.instance
+            .collection("sellers")
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .set(supplierModel.toMap());
+        Provider.of<LoadingController>(context, listen: false).setLoading(false);
+
+        navigateToPage(context, StoreAddingScreen());
+      } on FirebaseException catch (e) {
+        Provider.of<LoadingController>(context!, listen: false).setLoading(false);
+        showCustomMessage(context, e.message!);
+      }
     }
-    return response;
   }
 
   signIn(BuildContext context, String email, String password) async {
@@ -49,7 +59,7 @@ class AuthServices {
         await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
         Provider.of<LoadingController>(context, listen: false).setLoading(false);
 
-        navigateToPage(context, CustomNavigationBar());
+        navigateToPage(context, CustomNavBar());
       } on FirebaseException catch (e) {
         Provider.of<LoadingController>(context, listen: false).setLoading(false);
         showCustomMessage(context, e.message!);
