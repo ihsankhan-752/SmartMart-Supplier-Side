@@ -40,15 +40,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 SizedBox(height: 25),
                 Text("Username", style: AppTextStyles.APPBAR_HEADING_STYLE.copyWith(fontSize: 14)),
                 SizedBox(height: 3),
-                AuthTextInput(controller: appTextControllers.fullNameController, hintText: "supplier one"),
+                CustomTextInput(controller: appTextControllers.fullNameController, hintText: "supplier one"),
                 SizedBox(height: 12),
                 Text("E-Mail", style: AppTextStyles.APPBAR_HEADING_STYLE.copyWith(fontSize: 14)),
                 SizedBox(height: 3),
-                AuthTextInput(controller: appTextControllers.emailController, hintText: "supplier@gmail.com"),
+                CustomTextInput(controller: appTextControllers.emailController, hintText: "supplier@gmail.com"),
                 SizedBox(height: 12),
                 Text("Contact", style: AppTextStyles.APPBAR_HEADING_STYLE.copyWith(fontSize: 14)),
                 SizedBox(height: 3),
-                AuthTextInput(
+                CustomTextInput(
                   controller: appTextControllers.contactController,
                   inputType: TextInputType.number,
                   hintText: "123456987",
@@ -56,11 +56,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 SizedBox(height: 12),
                 Text("Address", style: AppTextStyles.APPBAR_HEADING_STYLE.copyWith(fontSize: 14)),
                 SizedBox(height: 3),
-                AuthTextInput(controller: appTextControllers.addressController, hintText: "California,USA"),
+                CustomTextInput(controller: appTextControllers.addressController, hintText: "California,USA"),
                 SizedBox(height: 12),
                 Text("Password", style: AppTextStyles.APPBAR_HEADING_STYLE.copyWith(fontSize: 14)),
                 SizedBox(height: 3),
-                AuthTextInput(
+                CustomTextInput(
                   controller: appTextControllers.passwordController,
                   hintText: "*******",
                   isSecureText: _isVisible,

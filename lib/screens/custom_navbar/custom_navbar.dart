@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_mart_supplier_side/constants/app_assets.dart';
 import 'package:smart_mart_supplier_side/constants/colors.dart';
-import 'package:smart_mart_supplier_side/controllers/user_controller.dart';
 import 'package:smart_mart_supplier_side/screens/custom_navbar/widgets/custom_widget_selection.dart';
 
 import '../../constants/lists.dart';
+import '../../controllers/seller_controller.dart';
 import '../../services/notification_services.dart';
 
 class CustomNavBar extends StatefulWidget {
@@ -28,7 +28,7 @@ class _CustomNavBarState extends State<CustomNavBar> {
   int _currentIndex = 0;
 
   loadUserData() async {
-    await Provider.of<SellerController>(context, listen: false).getUser();
+    await Provider.of<SellerController>(context, listen: false).getSellerInformation();
   }
 
   @override
@@ -90,8 +90,8 @@ class _CustomNavBarState extends State<CustomNavBar> {
                 ),
                 CustomWidgetSelection(
                   iconColor: _currentIndex == 4 ? AppColors.primaryBlack : AppColors.primaryWhite.withOpacity(0.6),
-                  image: AppAssets.profileIcon,
-                  title: "Profile",
+                  image: AppAssets.settings,
+                  title: "Settings",
                   onPressed: () {
                     setState(() {
                       _currentIndex = 4;

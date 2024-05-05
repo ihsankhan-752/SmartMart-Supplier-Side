@@ -5,16 +5,19 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_mart_supplier_side/constants/app_assets.dart';
 import 'package:smart_mart_supplier_side/constants/text_styles.dart';
-import 'package:smart_mart_supplier_side/controllers/user_controller.dart';
 import 'package:smart_mart_supplier_side/main.dart';
+import 'package:smart_mart_supplier_side/screens/custom_navbar/settings/change_password/change_password_screen.dart';
+import 'package:smart_mart_supplier_side/screens/custom_navbar/settings/my_store/my_store_screen.dart';
 
 import '../../../constants/colors.dart';
+import '../../../controllers/seller_controller.dart';
 import '../../../widgets/custom_list_tile.dart';
 import '../../auth/login_screen.dart';
 import '../widgets/custom_appbar_header.dart';
+import 'my_profile/my_profile.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+class SettingScreen extends StatelessWidget {
+  const SettingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,11 +25,11 @@ class ProfileScreen extends StatelessWidget {
     return Column(
       children: [
         CustomAppBarHeader(
-          title: "My Profile",
+          title: "Settings",
           widget: SizedBox(
             height: 20,
             width: 25,
-            child: Image.asset(AppAssets.profileIcon),
+            child: Image.asset(AppAssets.settings),
           ),
         ),
         SizedBox(height: 20),
@@ -63,19 +66,23 @@ class ProfileScreen extends StatelessWidget {
         CustomListTile(
           title: "My Profile",
           icon: Icons.person,
-          onPressed: () {},
+          onPressed: () {
+            navigateToPage(context, MyProfileScreen());
+          },
         ),
         CustomListTile(
           title: "My Store",
           icon: Icons.store,
+          onPressed: () {
+            navigateToPage(context, MyStoreScreen());
+          },
         ),
         CustomListTile(
           title: "Change Password",
           icon: Icons.lock_person_outlined,
-        ),
-        CustomListTile(
-          title: "Delete My Account",
-          icon: Icons.delete_outline,
+          onPressed: () {
+            navigateToPage(context, ChangePasswordScreen());
+          },
         ),
         CustomListTile(
           onPressed: () {

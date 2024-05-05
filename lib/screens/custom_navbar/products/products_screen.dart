@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:smart_mart_supplier_side/constants/app_assets.dart';
 import 'package:smart_mart_supplier_side/constants/text_styles.dart';
+import 'package:smart_mart_supplier_side/main.dart';
+import 'package:smart_mart_supplier_side/screens/custom_navbar/products/product_uploading_screen.dart';
 import 'package:smart_mart_supplier_side/screens/custom_navbar/products/widgets/all_categories.dart';
 import 'package:smart_mart_supplier_side/screens/custom_navbar/products/widgets/kids_category.dart';
 import 'package:smart_mart_supplier_side/screens/custom_navbar/products/widgets/men_category.dart';
@@ -27,7 +29,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
           widget: SizedBox(height: 20, width: 20, child: Image.asset(AppAssets.products)),
           title: "Products",
           suffixWidget: TextButton(
-            onPressed: () {},
+            onPressed: () {
+              navigateToPage(context, ProductUploadingScreen());
+            },
             child: Text(
               "Add Products",
               style: AppTextStyles.APPBAR_HEADING_STYLE.copyWith(

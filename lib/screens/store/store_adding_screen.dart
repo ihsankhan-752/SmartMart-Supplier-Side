@@ -38,21 +38,21 @@ class _StoreAddingScreenState extends State<StoreAddingScreen> {
               SizedBox(height: 20),
               Text("Store Name", style: AppTextStyles.APPBAR_HEADING_STYLE.copyWith(fontSize: 14)),
               SizedBox(height: 7),
-              AuthTextInput(
+              CustomTextInput(
                 controller: appTextControllers.storeNameController,
                 hintText: "store1",
               ),
               SizedBox(height: 20),
               Text("Location", style: AppTextStyles.APPBAR_HEADING_STYLE.copyWith(fontSize: 14)),
               SizedBox(height: 7),
-              AuthTextInput(
+              CustomTextInput(
                 controller: appTextControllers.storeLocationController,
                 hintText: "Swat kpk",
               ),
               SizedBox(height: 20),
               Text("Contact", style: AppTextStyles.APPBAR_HEADING_STYLE.copyWith(fontSize: 14)),
               SizedBox(height: 7),
-              AuthTextInput(
+              CustomTextInput(
                 controller: appTextControllers.storeContactController,
                 hintText: "0946-121212",
                 inputType: TextInputType.number,
@@ -60,7 +60,7 @@ class _StoreAddingScreenState extends State<StoreAddingScreen> {
               SizedBox(height: 20),
               Text("Description", style: AppTextStyles.APPBAR_HEADING_STYLE.copyWith(fontSize: 14)),
               SizedBox(height: 7),
-              AuthTextInput(
+              CustomTextInput(
                 controller: appTextControllers.storeDescriptionController,
                 hintText: "Fluxstore is one of the finest shopping center...",
                 maxLines: 5,

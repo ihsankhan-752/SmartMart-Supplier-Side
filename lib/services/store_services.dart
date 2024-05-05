@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_mart_supplier_side/controllers/loading_controller.dart';
 import 'package:smart_mart_supplier_side/main.dart';
@@ -44,6 +45,30 @@ class StoreServices {
 
         showCustomMessage(context, e.message!);
       }
+    }
+  }
+
+  updateStoreInformation({
+    required BuildContext context,
+    required String storeId,
+    required String storeName,
+    required String address,
+    required String description,
+    required int contact,
+  }) async {
+    try {
+      Provider.of<LoadingController>(context, listen: false).setLoading(true);
+      await FirebaseFirestore.instance.collection('stores').doc(storeId).update({
+        'storeName': storeName,
+        'address': address,
+        'contact': contact,
+        'description': description,
+      });
+      Provider.of<LoadingController>(context, listen: false).setLoading(false);
+      Navigator.pop(context);
+    } on FirebaseException catch (e) {
+      Provider.of<LoadingController>(context, listen: false).setLoading(false);
+      showCustomMessage(context, e.message!);
     }
   }
 }

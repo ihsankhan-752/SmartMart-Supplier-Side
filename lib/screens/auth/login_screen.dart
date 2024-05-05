@@ -45,11 +45,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: 30),
                 Text("E-Mail", style: AppTextStyles.APPBAR_HEADING_STYLE.copyWith(fontSize: 14)),
                 SizedBox(height: 3),
-                AuthTextInput(controller: appTextControllers.emailController, hintText: "supplier@gmail.com"),
+                CustomTextInput(controller: appTextControllers.emailController, hintText: "supplier@gmail.com"),
                 SizedBox(height: 15),
                 Text("Password", style: AppTextStyles.APPBAR_HEADING_STYLE.copyWith(fontSize: 14)),
                 SizedBox(height: 3),
-                AuthTextInput(
+                CustomTextInput(
                   controller: appTextControllers.passwordController,
                   hintText: "******",
                   isSecureText: _isVisible,
@@ -82,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: 20),
                 loadingController.isLoading
-                    ? CircularProgressIndicator()
+                    ? Center(child: CircularProgressIndicator())
                     : PrimaryButton(
                         onPressed: () async {
                           await AuthServices().signIn(

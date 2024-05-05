@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../constants/colors.dart';
 
-class AuthTextInput extends StatelessWidget {
+class CustomTextInput extends StatelessWidget {
   final String? hintText;
   final Widget? suffixWidget;
   final bool? isSecureText;
@@ -10,9 +10,15 @@ class AuthTextInput extends StatelessWidget {
   final TextEditingController? controller;
   final int? maxLines;
 
-  const AuthTextInput(
-      {Key? key, this.hintText, this.suffixWidget, this.controller, this.isSecureText, this.inputType, this.maxLines})
-      : super(key: key);
+  const CustomTextInput({
+    Key? key,
+    this.hintText,
+    this.suffixWidget,
+    this.controller,
+    this.isSecureText,
+    this.inputType,
+    this.maxLines,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

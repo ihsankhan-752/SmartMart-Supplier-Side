@@ -12,12 +12,12 @@ class CustomAppBarHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 90,
+      height: 110,
       color: AppColors.primaryColor,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 40),
+          SizedBox(height: 56),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(

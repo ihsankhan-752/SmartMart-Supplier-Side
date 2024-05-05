@@ -15,15 +15,17 @@ class PrimaryButton extends StatelessWidget {
       minWidth: width,
       height: 55,
       onPressed: onPressed,
-      child: Text(
-        title!,
-        style: TextStyle(
-          fontSize: 18,
-          fontFamily: 'Mirador',
-          color: AppColors.primaryWhite,
+      child: Center(
+        child: Text(
+          title!,
+          style: TextStyle(
+            fontSize: 18,
+            fontFamily: 'Mirador',
+            color: AppColors.primaryWhite,
+          ),
         ),
       ),
-      color: btnColor,
+      color: btnColor ?? AppColors.primaryColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),

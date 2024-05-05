@@ -8,4 +8,5 @@ class AppAssets {
   static String statics = 'images/statics.png';
   static String notification = 'images/notification.png';
   static String products = 'images/products.png';
+  static String settings = 'images/setting.png';
 }

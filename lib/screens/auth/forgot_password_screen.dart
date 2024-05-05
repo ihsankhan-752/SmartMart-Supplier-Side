@@ -35,7 +35,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           children: [
             LogoWidget(fontSize: 30),
             SizedBox(height: 20),
-            AuthTextInput(controller: emailController, hintText: "E-mail"),
+            CustomTextInput(controller: emailController, hintText: "E-mail"),
             SizedBox(height: 20),
             PrimaryButton(
               onPressed: () async {

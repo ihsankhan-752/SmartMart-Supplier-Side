@@ -1,17 +1,13 @@
-import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:smart_mart_supplier_side/constants/lists.dart';
-import 'package:uuid/uuid.dart';
+import 'package:smart_mart_supplier_side/constants/text_styles.dart';
+import 'package:smart_mart_supplier_side/screens/custom_navbar/products/widgets/add_image_widgets.dart';
+import 'package:smart_mart_supplier_side/screens/custom_navbar/products/widgets/add_product_title_value_widget.dart';
+import 'package:smart_mart_supplier_side/widgets/buttons.dart';
+import 'package:smart_mart_supplier_side/widgets/text_input.dart';
 
 import '../../../constants/colors.dart';
-import '../../../constants/text_styles.dart';
-import '../../../widgets/text_input_decoration.dart';
+import '../widgets/custom_appbar_header.dart';
 
 class ProductUploadingScreen extends StatefulWidget {
   const ProductUploadingScreen({Key? key}) : super(key: key);
@@ -21,278 +17,143 @@ class ProductUploadingScreen extends StatefulWidget {
 }
 
 class _ProductUploadingScreenState extends State<ProductUploadingScreen> {
-  bool isLoading = false;
-  String pdtId = '';
-  String pdtName = '';
-  String pdtDescription = '';
-  double price = 0.0;
-  int discount = 0;
-  int quantity = 0;
-
-  List<String> imageUrlList = [];
-  GlobalKey<FormState> _key = GlobalKey();
-  String selectedCategory = "men";
-  List<XFile>? imageFileList;
-
-  ImagePicker _picker = ImagePicker();
-  Future<void> uploadProductImages() async {
-    final pickedImages = await _picker.pickMultiImage(
-      imageQuality: 95,
-      maxHeight: 300,
-      maxWidth: 300,
-    );
-    setState(() {
-      imageFileList = pickedImages;
-    });
-  }
-
-  Future<void> uploadProductData() async {
-    pdtId = Uuid().v4();
-    if (imageFileList!.isNotEmpty) {
-      try {
-        setState(() {
-          isLoading = true;
-        });
-        for (var _image in imageFileList!) {
-          FirebaseStorage fs = FirebaseStorage.instance;
-          Reference ref = await fs.ref().child(DateTime.now().millisecondsSinceEpoch.toString());
-          await ref.putFile(File(_image.path));
-          await ref.getDownloadURL();
-          imageUrlList.add(await ref.getDownloadURL());
-        }
-        await FirebaseFirestore.instance.collection("products").doc(pdtId).set({
-          "pdtId": pdtId,
-          "supplierId": FirebaseAuth.instance.currentUser!.uid,
-          "category": selectedCategory,
-          "productImages": imageUrlList,
-          "pdtName": pdtName,
-          "pdtDescription": pdtDescription,
-          "discount": 0,
-          "quantity": quantity,
-          "price": price,
-        });
-        setState(() {
-          isLoading = false;
-        });
-        imageUrlList = [];
-        imageFileList = [];
-      } catch (e) {
-        setState(() {
-          isLoading = false;
-        });
-        print(e);
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please Upload Images")));
-    }
-  }
+  String selectedCategory = "Men";
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
     return Scaffold(
-        backgroundColor: AppColors.primaryBlack,
-        appBar: AppBar(
-          title: Text("Upload", style: AppTextStyles.APPBAR_HEADING_STYLE),
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          elevation: 0.0,
-          backgroundColor: AppColors.mainColor,
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            child: Form(
-              key: _key,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CustomAppBarHeader(
+              widget: GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Icon(Icons.arrow_back),
+              ),
+              title: "Add Products",
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    height: MediaQuery.of(context).size.width * 0.45,
-                    width: MediaQuery.of(context).size.width * 0.45,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.mainColor, width: 2),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: imageFileList == null
-                          ? Text(
-                              "No Photo to preview",
-                              style: TextStyle(
-                                color: AppColors.primaryWhite,
-                              ),
-                            )
-                          : ListView.builder(
-                              itemCount: imageFileList!.length,
-                              itemBuilder: (context, index) {
-                                return Container(
-                                  height: MediaQuery.of(context).size.width * 0.4,
-                                  width: MediaQuery.of(context).size.width * 0.4,
-                                  margin: EdgeInsets.all(05),
-                                  child: Image.file(File(imageFileList![index].path), fit: BoxFit.cover),
-                                );
-                              },
-                            ),
+                  Text(
+                    "Choose Product Images",
+                    style: AppTextStyles.APPBAR_HEADING_STYLE.copyWith(
+                      color: AppColors.primaryBlack,
+                      fontSize: 12,
                     ),
                   ),
-                  Divider(color: AppColors.mainColor, thickness: 1.5),
-                  SizedBox(height: 20),
+                  AddImagesWidget(),
+                  SizedBox(height: 15),
                   Text(
                     "Select Main Category",
-                    style: GoogleFonts.poppins(
-                      color: AppColors.primaryColor,
-                      fontWeight: FontWeight.bold,
+                    style: AppTextStyles.APPBAR_HEADING_STYLE.copyWith(
+                      color: AppColors.primaryBlack,
+                      fontSize: 12,
                     ),
-                  ),
-                  DropdownButton(
-                    dropdownColor: AppColors.mainColor,
-                    value: selectedCategory.isEmpty ? Text("No Category is Selected") : selectedCategory,
-                    style: TextStyle(
-                      color: AppColors.primaryWhite,
-                      fontSize: 18,
-                    ),
-                    icon: Icon(Icons.arrow_downward, color: AppColors.primaryWhite),
-                    items: tabs.map((e) {
-                      return DropdownMenuItem(
-                        value: e,
-                        child: Text(e),
-                      );
-                    }).toList(),
-                    onChanged: (v) {
-                      setState(() {
-                        selectedCategory = v.toString();
-                      });
-                    },
                   ),
                   SizedBox(height: 10),
+                  Container(
+                    width: MediaQuery.sizeOf(context).width * 0.5,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.primaryColor),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton(
+                          dropdownColor: AppColors.mainColor,
+                          hint: Text(selectedCategory),
+                          style: TextStyle(
+                            color: AppColors.primaryWhite,
+                            fontSize: 18,
+                          ),
+                          icon: Icon(Icons.keyboard_arrow_down_outlined, color: AppColors.primaryBlack),
+                          items: tabs.map((e) {
+                            return DropdownMenuItem(
+                              value: e,
+                              child: Text(e),
+                            );
+                          }).toList(),
+                          onChanged: (v) {
+                            setState(() {
+                              selectedCategory = v.toString();
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * .4,
-                        child: TextFormField(
-                          style: TextStyle(
-                            color: AppColors.primaryWhite,
-                          ),
-                          keyboardType: TextInputType.number,
-                          onSaved: (v) {
-                            setState(() {
-                              price = double.parse(v!);
-                            });
-                          },
-                          validator: (v) {
-                            if (v!.isEmpty) {
-                              return "Price Must be Filled";
-                            } else {
-                              return null;
-                            }
-                          },
-                          decoration: textInputDecoration.copyWith(hintText: "Price"),
-                        ),
+                      AddProductTitleValueWidget(
+                        title: "Product Title",
+                        controller: TextEditingController(),
+                        hintText: 'Kids Jeans',
                       ),
-                      SizedBox(width: 20),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * .4,
-                        child: TextFormField(
-                          style: TextStyle(
-                            color: AppColors.primaryWhite,
-                          ),
-                          keyboardType: TextInputType.number,
-                          decoration: textInputDecoration.copyWith(hintText: "Discount"),
-                        ),
+                      AddProductTitleValueWidget(
+                        title: "Total Quantity",
+                        controller: TextEditingController(),
+                        hintText: '120',
+                        inputType: TextInputType.number,
                       ),
                     ],
                   ),
-                  SizedBox(height: 13),
-                  TextFormField(
-                    style: TextStyle(
-                      color: AppColors.primaryWhite,
-                    ),
-                    keyboardType: TextInputType.number,
-                    onSaved: (v) {
-                      setState(() {
-                        quantity = int.parse(v!);
-                      });
-                    },
-                    validator: (v) {
-                      if (v!.isEmpty) {
-                        return "Please Enter Product Quantity";
-                      } else {
-                        return null;
-                      }
-                    },
-                    decoration: textInputDecoration.copyWith(hintText: "Quantity"),
+                  SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AddProductTitleValueWidget(
+                        title: "Product Price",
+                        controller: TextEditingController(),
+                        hintText: '\$ 22.5',
+                        inputType: TextInputType.numberWithOptions(decimal: true),
+                      ),
+                      AddProductTitleValueWidget(
+                        title: "Discount",
+                        controller: TextEditingController(),
+                        hintText: '5 %',
+                        inputType: TextInputType.numberWithOptions(decimal: true),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 13),
-                  TextFormField(
-                    style: TextStyle(
-                      color: AppColors.primaryWhite,
+                  SizedBox(height: 30),
+                  Text(
+                    "Product Description",
+                    style: AppTextStyles.APPBAR_HEADING_STYLE.copyWith(
+                      color: AppColors.primaryBlack,
+                      fontSize: 12,
                     ),
-                    onSaved: (v) {
-                      setState(() {
-                        pdtName = v!;
-                      });
-                    },
-                    validator: (v) {
-                      if (v!.isEmpty) {
-                        return "Product Name must be given";
-                      } else {
-                        return null;
-                      }
-                    },
-                    decoration: textInputDecoration.copyWith(hintText: "Product Name"),
                   ),
-                  SizedBox(height: 13),
-                  TextFormField(
-                    style: TextStyle(
-                      color: AppColors.primaryWhite,
-                    ),
-                    onSaved: (v) {
-                      setState(() {
-                        pdtDescription = v!;
-                      });
-                    },
-                    validator: (v) {
-                      if (v!.isEmpty) {
-                        return "Description must be given";
-                      } else {
-                        return null;
-                      }
-                    },
-                    maxLines: 3,
-                    maxLength: 100,
-                    decoration: textInputDecoration.copyWith(hintText: "Description"),
+                  SizedBox(height: 5),
+                  CustomTextInput(
+                    maxLines: 5,
+                    hintText: 'Kids Jean Specially design for kids for both winter and summer season',
                   ),
                 ],
               ),
             ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        child: SizedBox(
+          height: 55,
+          child: PrimaryButton(
+            onPressed: () {},
+            title: "Upload Product",
           ),
         ),
-        floatingActionButton: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            FloatingActionButton(
-                onPressed: () {
-                  uploadProductImages();
-                },
-                child: Icon(Icons.photo, color: AppColors.primaryWhite),
-                backgroundColor: AppColors.primaryColor),
-            SizedBox(width: 10),
-            FloatingActionButton(
-                onPressed: isLoading
-                    ? null
-                    : () {
-                        if (_key.currentState!.validate()) {
-                          _key.currentState!.save();
-                          uploadProductData().then((value) {
-                            _key.currentState!.reset();
-                          });
-                        } else {
-                          print("Not Valid State");
-                        }
-                      },
-                child: isLoading ? CircularProgressIndicator() : Icon(Icons.upload, color: AppColors.primaryWhite),
-                backgroundColor: AppColors.primaryColor),
-          ],
-        ));
+      ),
+    );
   }
 }
