@@ -118,4 +118,10 @@ class ProductServices {
       );
     } on FirebaseException catch (e) {}
   }
+
+  deleteProduct(BuildContext context, String productId) async {
+    try {
+      await FirebaseFirestore.instance.collection('products').doc(productId).delete();
+    } on FirebaseException catch (e) {}
+  }
 }

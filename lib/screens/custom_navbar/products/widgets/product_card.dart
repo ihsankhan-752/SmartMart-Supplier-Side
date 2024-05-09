@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_mart_supplier_side/constants/text_styles.dart';
 import 'package:smart_mart_supplier_side/model/pdt_model.dart';
 import 'package:smart_mart_supplier_side/screens/custom_navbar/products/product_updating_screen.dart';
+import 'package:smart_mart_supplier_side/services/product_services.dart';
 
 import '../../../../constants/colors.dart';
 import '../../../../main.dart';
@@ -74,6 +76,16 @@ class ProductCard extends StatelessWidget {
                       if (v == 'edit') {
                         navigateToPage(context, ProductUpdateScreen(pdtModel: productModel));
                       }
+                      if (v == 'delete') {
+                        showAlertDialog(
+                          context: context,
+                          content: "Are you sure to remove this product?",
+                          onPressed: () {
+                            ProductServices().deleteProduct(context, productModel.pdtId!);
+                            Navigator.pop(context);
+                          },
+                        );
+                      }
                     }, itemBuilder: (context) {
                       return [
                         PopupMenuItem(
@@ -95,4 +107,32 @@ class ProductCard extends StatelessWidget {
       ),
     );
   }
+}
+
+showAlertDialog({
+  required BuildContext context,
+  required String content,
+  Function()? onPressed,
+}) {
+  return showDialog(
+    context: context,
+    builder: (_) {
+      return CupertinoAlertDialog(
+        title: Text("Wait!"),
+        content: Text(content),
+        actions: [
+          CupertinoActionSheetAction(
+            onPressed: onPressed!,
+            child: Text("Yes"),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text("No"),
+          ),
+        ],
+      );
+    },
+  );
 }
