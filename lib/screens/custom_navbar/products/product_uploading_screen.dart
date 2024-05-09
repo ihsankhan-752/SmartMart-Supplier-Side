@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smart_mart_supplier_side/constants/lists.dart';
 import 'package:smart_mart_supplier_side/constants/text_styles.dart';
+import 'package:smart_mart_supplier_side/controllers/app_text_controller.dart';
+import 'package:smart_mart_supplier_side/controllers/loading_controller.dart';
 import 'package:smart_mart_supplier_side/screens/custom_navbar/products/widgets/add_image_widgets.dart';
 import 'package:smart_mart_supplier_side/screens/custom_navbar/products/widgets/add_product_title_value_widget.dart';
+import 'package:smart_mart_supplier_side/services/product_services.dart';
 import 'package:smart_mart_supplier_side/widgets/buttons.dart';
 import 'package:smart_mart_supplier_side/widgets/text_input.dart';
 
 import '../../../constants/colors.dart';
+import '../../../controllers/image_controller.dart';
 import '../widgets/custom_appbar_header.dart';
 
 class ProductUploadingScreen extends StatefulWidget {
@@ -19,9 +24,11 @@ class ProductUploadingScreen extends StatefulWidget {
 class _ProductUploadingScreenState extends State<ProductUploadingScreen> {
   String selectedCategory = "Men";
 
+  AppTextControllers appTextControllers = AppTextControllers();
+
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
+    final imageController = Provider.of<ImageController>(context);
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -96,12 +103,12 @@ class _ProductUploadingScreenState extends State<ProductUploadingScreen> {
                     children: [
                       AddProductTitleValueWidget(
                         title: "Product Title",
-                        controller: TextEditingController(),
+                        controller: appTextControllers.productTitleController,
                         hintText: 'Kids Jeans',
                       ),
                       AddProductTitleValueWidget(
                         title: "Total Quantity",
-                        controller: TextEditingController(),
+                        controller: appTextControllers.productQuantityController,
                         hintText: '120',
                         inputType: TextInputType.number,
                       ),
@@ -113,13 +120,13 @@ class _ProductUploadingScreenState extends State<ProductUploadingScreen> {
                     children: [
                       AddProductTitleValueWidget(
                         title: "Product Price",
-                        controller: TextEditingController(),
+                        controller: appTextControllers.productPriceController,
                         hintText: '\$ 22.5',
                         inputType: TextInputType.numberWithOptions(decimal: true),
                       ),
                       AddProductTitleValueWidget(
                         title: "Discount",
-                        controller: TextEditingController(),
+                        controller: appTextControllers.productDiscountController,
                         hintText: '5 %',
                         inputType: TextInputType.numberWithOptions(decimal: true),
                       ),
@@ -137,6 +144,7 @@ class _ProductUploadingScreenState extends State<ProductUploadingScreen> {
                   CustomTextInput(
                     maxLines: 5,
                     hintText: 'Kids Jean Specially design for kids for both winter and summer season',
+                    controller: appTextControllers.productDescriptionController,
                   ),
                 ],
               ),
@@ -148,10 +156,39 @@ class _ProductUploadingScreenState extends State<ProductUploadingScreen> {
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: SizedBox(
           height: 55,
-          child: PrimaryButton(
-            onPressed: () {},
-            title: "Upload Product",
-          ),
+          child: Consumer<LoadingController>(builder: (context, loadingController, child) {
+            return loadingController.isLoading
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SizedBox(
+                        height: 40,
+                        width: 40,
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  )
+                : PrimaryButton(
+                    onPressed: () {
+                      ProductServices()
+                          .uploadProduct(
+                        context: context,
+                        category: selectedCategory,
+                        images: imageController.imageList!,
+                        productTitle: appTextControllers.productTitleController.text,
+                        productQuantity: int.tryParse(appTextControllers.productQuantityController.text),
+                        productPrice: double.tryParse(appTextControllers.productPriceController.text),
+                        discount: double.tryParse(appTextControllers.productDiscountController.text) ?? 0.0,
+                        description: appTextControllers.productDescriptionController.text,
+                      )
+                          .whenComplete(() {
+                        imageController.imageList!.clear();
+                        setState(() {});
+                      });
+                    },
+                    title: "Upload Product",
+                  );
+          }),
         ),
       ),
     );

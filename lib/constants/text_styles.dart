@@ -4,6 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'colors.dart';
 
 class AppTextStyles {
+  TextStyle basicStyle = TextStyle(
+    fontSize: 14,
+    color: AppColors.primaryBlack,
+    fontFamily: 'Mirador',
+    fontWeight: FontWeight.bold,
+  );
   TextStyle H1 = GoogleFonts.patuaOne(
     fontSize: 32,
     color: Colors.white,

@@ -6,14 +6,14 @@ class PrimaryButton extends StatelessWidget {
   final String? title;
   final VoidCallback? onPressed;
   final Color? btnColor;
-  final double? width;
-  const PrimaryButton({Key? key, this.title, this.onPressed, this.btnColor, this.width}) : super(key: key);
+  final double? width, height;
+  const PrimaryButton({Key? key, this.title, this.onPressed, this.btnColor, this.width, this.height}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
       minWidth: width,
-      height: 55,
+      height: height ?? 55,
       onPressed: onPressed,
       child: Center(
         child: Text(

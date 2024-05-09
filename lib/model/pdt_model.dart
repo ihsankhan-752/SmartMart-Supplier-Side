@@ -1,21 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class PdtModel {
+class ProductModel {
   String? category;
   String? pdtName;
   double? pdtPrice;
-  int? discount;
+  double? discount;
   String? pdtDescription;
   String? pdtId;
-  List<dynamic>? pdtImages;
+  List? pdtImages;
   int? quantity;
-  String? supplierId;
+  String? sellerId;
 
-  PdtModel({
+  ProductModel({
     this.category,
     this.pdtName,
     this.pdtId,
-    this.supplierId,
+    this.sellerId,
     this.quantity,
     this.discount,
     this.pdtDescription,
@@ -23,17 +23,31 @@ class PdtModel {
     this.pdtPrice,
   });
 
-  factory PdtModel.fromDocumentSnapshot(DocumentSnapshot data) {
-    return PdtModel(
-      category: data['category'],
-      pdtName: data['pdtName'],
-      pdtId: data['pdtId'],
-      pdtDescription: data['pdtDescription'],
-      discount: data['discount'],
-      pdtPrice: data['price'],
-      pdtImages: data['productImages'],
-      quantity: data['quantity'],
-      supplierId: data['supplierId'],
+  Map<String, dynamic> toMap() {
+    return {
+      'category': this.category,
+      'pdtName': this.pdtName,
+      'pdtPrice': this.pdtPrice,
+      'discount': this.discount,
+      'pdtDescription': this.pdtDescription,
+      'pdtId': this.pdtId,
+      'pdtImages': this.pdtImages,
+      'quantity': this.quantity,
+      'sellerId': this.sellerId,
+    };
+  }
+
+  factory ProductModel.fromMap(DocumentSnapshot map) {
+    return ProductModel(
+      category: map['category'] as String,
+      pdtName: map['pdtName'] as String,
+      pdtPrice: map['pdtPrice'] as double,
+      discount: map['discount'] as double,
+      pdtDescription: map['pdtDescription'] as String,
+      pdtId: map['pdtId'] as String,
+      pdtImages: map['pdtImages'],
+      quantity: map['quantity'] as int,
+      sellerId: map['sellerId'] as String,
     );
   }
 }

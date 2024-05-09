@@ -1,286 +1,288 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:smart_mart_supplier_side/constants/text_styles.dart';
+import 'package:smart_mart_supplier_side/controllers/app_text_controller.dart';
+import 'package:smart_mart_supplier_side/controllers/image_controller.dart';
+import 'package:smart_mart_supplier_side/controllers/loading_controller.dart';
+import 'package:smart_mart_supplier_side/screens/custom_navbar/widgets/custom_appbar_header.dart';
+import 'package:smart_mart_supplier_side/services/product_services.dart';
+import 'package:smart_mart_supplier_side/widgets/buttons.dart';
+import 'package:smart_mart_supplier_side/widgets/text_input.dart';
 
 import '../../../constants/colors.dart';
-import '../../../constants/text_styles.dart';
 import '../../../model/pdt_model.dart';
-import '../../../widgets/buttons.dart';
-import '../../../widgets/text_input_decoration.dart';
 
 class ProductUpdateScreen extends StatefulWidget {
-  final dynamic data;
-  const ProductUpdateScreen({Key? key, this.data}) : super(key: key);
+  final ProductModel pdtModel;
+  const ProductUpdateScreen({Key? key, required this.pdtModel}) : super(key: key);
 
   @override
   State<ProductUpdateScreen> createState() => _ProductUpdateScreenState();
 }
 
 class _ProductUpdateScreenState extends State<ProductUpdateScreen> {
-  late String pdtName;
-  late String pdtDescription;
-  late int discount;
-  late int quantity;
-  late double price;
-  List<XFile>? imageList;
-  GlobalKey<FormState> _key = GlobalKey();
-  ImagePicker _picker = ImagePicker();
-  Future<void> uploadProductImages() async {
-    final uploadImages = await _picker.pickMultiImage(
-      imageQuality: 95,
-      maxHeight: 300,
-      maxWidth: 300,
-    );
-    setState(() {
-      imageList = uploadImages;
-    });
+  AppTextControllers appTextControllers = AppTextControllers();
+
+  List _newImageList = [];
+  List _image = [];
+
+  getAllImages() async {
+    _image = widget.pdtModel.pdtImages!;
   }
 
-  bool isLoading = false;
+  @override
+  void initState() {
+    getAllImages();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    PdtModel pdtModel = PdtModel.fromDocumentSnapshot(widget.data);
-
-    List<String> imageUrlList = [];
-
-    Future<void> uploadProductData() async {
-      if (imageList!.isNotEmpty) {
-        if (_key.currentState!.validate()) {
-          _key.currentState!.save();
-          try {
-            setState(() {
-              isLoading = true;
-            });
-            for (var _image in imageList!) {
-              FirebaseStorage fs = await FirebaseStorage.instance;
-              Reference reference = fs.ref().child(DateTime.now().millisecondsSinceEpoch.toString());
-              await reference.putFile(File(_image.path));
-              await reference.getDownloadURL();
-              imageUrlList.add(await reference.getDownloadURL());
-            }
-            await FirebaseFirestore.instance.collection("products").doc(pdtModel.pdtId).update({
-              "productImages": imageUrlList,
-              "pdtName": pdtName,
-              "pdtDescription": pdtDescription,
-              "discount": discount,
-              "quantity": quantity,
-              "price": price,
-            });
-            setState(() {
-              isLoading = false;
-            });
-            imageUrlList = [];
-            imageList = [];
-          } catch (e) {
-            setState(() {
-              isLoading = false;
-            });
-            print(e);
-          }
-        }
-      }
-    }
-
+    final imageController = Provider.of<ImageController>(context);
     return Scaffold(
-      backgroundColor: AppColors.primaryBlack,
-      appBar: AppBar(
-        backgroundColor: AppColors.mainColor,
-        centerTitle: true,
-        title: Text(pdtModel.pdtName!, style: AppTextStyles.APPBAR_HEADING_STYLE),
-      ),
       body: SingleChildScrollView(
-        child: Form(
-          key: _key,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: Container(
-                    height: MediaQuery.of(context).size.width * 0.5,
-                    width: MediaQuery.of(context).size.width,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: pdtModel.pdtImages!.map((e) {
-                        return Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.network(e, fit: BoxFit.fill)),
-                        );
-                      }).toList(),
-                    )),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CustomAppBarHeader(
+              title: "Update Product",
+              widget: GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Icon(Icons.arrow_back),
               ),
-              ExpansionTile(
-                trailing: Icon(Icons.arrow_downward, color: AppColors.grey),
-                title: Text(
-                  "Change Images",
-                  style: TextStyle(
-                    color: AppColors.primaryWhite,
-                  ),
-                ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                      margin: EdgeInsets.symmetric(vertical: 10),
-                      height: MediaQuery.of(context).size.width * 0.45,
-                      width: MediaQuery.of(context).size.width * 0.45,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColors.grey),
-                      ),
-                      child: imageList == null
-                          ? Center(
-                              child: InkWell(
-                                  onTap: () {
-                                    uploadProductImages();
-                                  },
-                                  child: Icon(Icons.photo, size: 30, color: AppColors.grey)),
-                            )
-                          : ListView(
-                              children: imageList!.map((e) {
-                                return Image.file(File(e.path));
-                              }).toList(),
-                            ))
-                ],
-              ),
-              Divider(color: Colors.amber, thickness: 1),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      child: TextFormField(
-                        style: TextStyle(
-                          color: AppColors.grey,
+                  SizedBox(height: 10),
+                  Text(
+                    "Add New Images",
+                    style: AppTextStyles().basicStyle,
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.primaryColor),
+                          shape: BoxShape.circle,
                         ),
-                        onSaved: (v) {
-                          setState(() {
-                            price = double.parse(v!);
-                          });
-                        },
-                        initialValue: pdtModel.pdtPrice!.toStringAsFixed(2),
-                        decoration: textInputDecoration.copyWith(),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      child: TextFormField(
-                        style: TextStyle(
-                          color: AppColors.grey,
+                        child: Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              imageController.uploadImage(ImageSource.gallery).then((value) {
+                                _newImageList.add(File(imageController.selectedImage!.path));
+                              });
+                            },
+                            child: Icon(Icons.add_circle, color: AppColors.primaryColor, size: 24),
+                          ),
                         ),
-                        onSaved: (v) {
-                          setState(() {
-                            discount = int.parse(v!);
-                          });
-                        },
-                        maxLength: 2,
-                        initialValue: pdtModel.discount!.toString(),
-                        decoration: textInputDecoration.copyWith(),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.4,
-                  child: TextFormField(
-                    style: TextStyle(
-                      color: AppColors.grey,
-                    ),
-                    onSaved: (v) {
-                      setState(() {
-                        quantity = int.parse(v!);
-                      });
-                    },
-                    initialValue: pdtModel.quantity.toString(),
-                    decoration: textInputDecoration.copyWith(),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: TextFormField(
-                    style: TextStyle(
-                      color: AppColors.grey,
-                    ),
-                    onSaved: (v) {
-                      setState(() {
-                        pdtName = v!;
-                      });
-                    },
-                    maxLength: 100,
-                    maxLines: 3,
-                    initialValue: pdtModel.pdtName!,
-                    decoration: textInputDecoration.copyWith(),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: TextFormField(
-                    style: TextStyle(
-                      color: AppColors.grey,
-                    ),
-                    onSaved: (v) {
-                      setState(() {
-                        pdtDescription = v!;
-                      });
-                    },
-                    maxLength: 100,
-                    maxLines: 3,
-                    initialValue: pdtModel.pdtDescription!,
-                    decoration: textInputDecoration.copyWith(),
-                  ),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  MainButton(
-                    width: 100,
-                    title: "Cancel",
-                    onPressed: () {},
-                  ),
-                  SizedBox(width: 20),
-                  isLoading
-                      ? Center(child: CircularProgressIndicator())
-                      : MainButton(
-                          width: 120,
-                          title: "Save Changes",
-                          onPressed: () {
-                            uploadProductData();
+                      SizedBox(width: 10),
+                      SizedBox(
+                        width: MediaQuery.sizeOf(context).width - 100,
+                        height: 60,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _newImageList.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              width: 60,
+                              margin: EdgeInsets.only(right: 10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                  image: FileImage(_newImageList[index]),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              child: Align(
+                                alignment: Alignment.topRight,
+                                child: Icon(Icons.close_sharp, size: 20, color: Colors.red),
+                              ),
+                            );
                           },
-                        )
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    "Existing Images",
+                    style: AppTextStyles().basicStyle,
+                  ),
+                  SizedBox(height: 10),
+                  Container(
+                    height: 60,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _image.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          width: 60,
+                          margin: EdgeInsets.only(right: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                              image: NetworkImage(_image[index]),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.topRight,
+                            child: GestureDetector(
+                              onTap: () {
+                                ProductServices().removeSingleImage(
+                                  context,
+                                  widget.pdtModel.pdtId!,
+                                  _image[index],
+                                );
+                                _image.removeAt(index);
+                                setState(() {});
+                              },
+                              child: Icon(Icons.close_sharp, size: 20, color: Colors.red),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 25),
+                  Text(
+                    "Product Name",
+                    style: AppTextStyles().basicStyle,
+                  ),
+                  SizedBox(height: 5),
+                  CustomTextInput(
+                    controller: appTextControllers.productTitleController,
+                    hintText: widget.pdtModel.pdtName!,
+                  ),
+                  SizedBox(height: 25),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Price",
+                            style: AppTextStyles().basicStyle,
+                          ),
+                          SizedBox(height: 05),
+                          SizedBox(
+                            width: MediaQuery.sizeOf(context).width * 0.28,
+                            child: CustomTextInput(
+                              inputType: TextInputType.numberWithOptions(decimal: true),
+                              hintText: widget.pdtModel.pdtPrice!.toStringAsFixed(1),
+                              controller: appTextControllers.productPriceController,
+                            ),
+                          )
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Quantity",
+                            style: AppTextStyles().basicStyle,
+                          ),
+                          SizedBox(height: 05),
+                          SizedBox(
+                            width: MediaQuery.sizeOf(context).width * 0.28,
+                            child: CustomTextInput(
+                              inputType: TextInputType.number,
+                              controller: appTextControllers.productQuantityController,
+                              hintText: widget.pdtModel.quantity!.toString(),
+                            ),
+                          )
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Discount",
+                            style: AppTextStyles().basicStyle,
+                          ),
+                          SizedBox(height: 05),
+                          SizedBox(
+                            width: MediaQuery.sizeOf(context).width * 0.3,
+                            child: CustomTextInput(
+                              inputType: TextInputType.numberWithOptions(decimal: true),
+                              controller: appTextControllers.productDiscountController,
+                              hintText: widget.pdtModel.discount!.toStringAsFixed(1),
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 25),
+                  Text(
+                    "Description",
+                    style: AppTextStyles().basicStyle,
+                  ),
+                  SizedBox(height: 5),
+                  CustomTextInput(
+                    controller: appTextControllers.productDescriptionController,
+                    hintText: widget.pdtModel.pdtDescription!,
+                    maxLines: 5,
+                  ),
                 ],
               ),
-              SizedBox(height: 20),
-              Center(
-                child: MainButton(
-                  width: 200,
-                  title: "Delete this Item",
-                  onPressed: () async {
-                    FirebaseFirestore.instance.collection("products").doc(pdtModel.pdtId).delete().then((value) {
-                      Navigator.of(context).pop();
-                    });
-                  },
-                ),
-              ),
-              SizedBox(height: 20),
-            ],
-          ),
+            )
+          ],
         ),
+      ),
+      bottomNavigationBar: Container(
+        margin: EdgeInsets.all(15),
+        height: 60,
+        child: Consumer<LoadingController>(builder: (context, loadingController, child) {
+          return loadingController.isLoading
+              ? Center(
+                  child: Container(
+                    height: 40,
+                    width: 40,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                )
+              : PrimaryButton(
+                  onPressed: () {
+                    ProductServices().updateProduct(
+                      context: context,
+                      pdtId: widget.pdtModel.pdtId!,
+                      pdtTitle: appTextControllers.productTitleController.text.isEmpty
+                          ? widget.pdtModel.pdtName!
+                          : appTextControllers.productTitleController.text,
+                      pdtDescription: appTextControllers.productDescriptionController.text.isEmpty
+                          ? widget.pdtModel.pdtDescription!
+                          : appTextControllers.productDescriptionController.text,
+                      pdtPrice: appTextControllers.productPriceController.text.isEmpty
+                          ? widget.pdtModel.pdtPrice!
+                          : double.tryParse(appTextControllers.productPriceController.text)!,
+                      quantity: appTextControllers.productQuantityController.text.isEmpty
+                          ? widget.pdtModel.quantity!
+                          : int.tryParse(appTextControllers.productQuantityController.text)!,
+                      discount: appTextControllers.productDiscountController.text.isEmpty
+                          ? widget.pdtModel.discount!
+                          : double.tryParse(appTextControllers.productDiscountController.text)!,
+                      images: _newImageList,
+                    );
+                  },
+                  title: "Save Changes",
+                );
+        }),
       ),
     );
   }

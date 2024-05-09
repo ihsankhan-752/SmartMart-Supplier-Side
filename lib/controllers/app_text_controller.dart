@@ -12,6 +12,12 @@ class AppTextControllers extends ChangeNotifier {
   TextEditingController storeContactController = TextEditingController();
   TextEditingController storeDescriptionController = TextEditingController();
 
+  TextEditingController productTitleController = TextEditingController();
+  TextEditingController productQuantityController = TextEditingController();
+  TextEditingController productPriceController = TextEditingController();
+  TextEditingController productDiscountController = TextEditingController();
+  TextEditingController productDescriptionController = TextEditingController();
+
   clear() {
     fullNameController.clear();
     emailController.clear();
@@ -23,6 +29,13 @@ class AppTextControllers extends ChangeNotifier {
     storeLocationController.clear();
     storeContactController.clear();
     storeDescriptionController.clear();
+
+    productTitleController.clear();
+    productQuantityController.clear();
+    productPriceController.clear();
+    productDiscountController.clear();
+    productDescriptionController.clear();
+
     notifyListeners();
   }
 }

@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_mart_supplier_side/constants/colors.dart';
-import 'package:smart_mart_supplier_side/screens/custom_navbar/products/widgets/pdt_model.dart';
-import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
-import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
+import 'package:smart_mart_supplier_side/model/pdt_model.dart';
+import 'package:smart_mart_supplier_side/screens/custom_navbar/products/widgets/product_card.dart';
 
 class AllCategories extends StatelessWidget {
   const AllCategories({Key? key}) : super(key: key);
@@ -13,7 +13,10 @@ class AllCategories extends StatelessWidget {
     return Container(
       height: MediaQuery.sizeOf(context).height * 0.7,
       child: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection("products").snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection("products")
+            .where('sellerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+            .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
@@ -30,16 +33,14 @@ class AllCategories extends StatelessWidget {
               ),
             );
           }
-          return StaggeredGridView.countBuilder(
+          return ListView.builder(
             shrinkWrap: true,
+            padding: EdgeInsets.zero,
             itemCount: snapshot.data!.docs.length,
-            crossAxisCount: 2,
             itemBuilder: (context, index) {
-              return ProductModel(
-                products: snapshot.data!.docs[index],
-              );
+              ProductModel productModel = ProductModel.fromMap(snapshot.data!.docs[index]);
+              return ProductCard(productModel: productModel);
             },
-            staggeredTileBuilder: (context) => StaggeredTile.fit(1),
           );
         },
       ),
