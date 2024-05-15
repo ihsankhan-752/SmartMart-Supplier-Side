@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../constants/colors.dart';
+import '../constants/text_styles.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String? title;
@@ -56,6 +57,39 @@ class MainButton extends StatelessWidget {
             style: TextStyle(
               color: AppColors.primaryWhite,
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SmallButton extends StatelessWidget {
+  final double? width, height;
+  final Color? btnColor;
+  final String? title;
+  final Color? textColor;
+  final Function()? onPressed;
+  const SmallButton({super.key, this.width, this.btnColor, this.title, this.textColor, this.onPressed, this.height});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed ?? () {},
+      child: Container(
+        height: height ?? 40,
+        width: width,
+        decoration: BoxDecoration(
+          color: btnColor,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Center(
+          child: Text(
+            title!,
+            style: AppTextStyles().H2.copyWith(
+                  fontSize: 12,
+                  color: textColor,
+                ),
           ),
         ),
       ),

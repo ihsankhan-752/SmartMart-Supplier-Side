@@ -6,7 +6,7 @@ Future<File> compressImage(File image) async {
   List<int>? compressedBytes = await FlutterImageCompress.compressWithFile(
     image.absolute.path,
     minWidth: 500,
-    quality: 40,
+    quality: 50,
   );
 
   File compressedImage = File('${image.path}_compressed.jpg');
