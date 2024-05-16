@@ -4,9 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:smart_mart_supplier_side/model/seller_model.dart';
 import 'package:smart_mart_supplier_side/model/store_model.dart';
 
+import '../model/user_model.dart';
+
 class SellerController extends ChangeNotifier {
   SellerModel? _sellerModel;
   SellerModel get sellerModel => _sellerModel!;
+
+  UserModel? _userModel;
+  UserModel get userModel => _userModel!;
 
   StoreModel? _storeModel;
   StoreModel? get storeModel => _storeModel;
@@ -37,5 +42,17 @@ class SellerController extends ChangeNotifier {
       }
       notifyListeners();
     });
+  }
+
+  getOtherUserInformation(String id) async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection('users').doc(id).get();
+      if (snapshot.exists) {
+        _userModel = UserModel.fromDocument(snapshot);
+      }
+      notifyListeners();
+    } on FirebaseException catch (e) {
+      throw "No User Found!!!";
+    }
   }
 }
