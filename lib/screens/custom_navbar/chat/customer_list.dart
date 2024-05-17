@@ -79,14 +79,7 @@ class _CustomerChatListScreenState extends State<CustomerChatListScreen> {
                                 children: [
                                   ListTile(
                                     onTap: () {
-                                      navigateToPage(
-                                          context,
-                                          ChatScreen(
-                                            docId: snapshot.data!.docs[index].id,
-                                            userId: customerInfo['uid'],
-                                            email: customerInfo['email'],
-                                            supplierName: customerInfo['userName'],
-                                          ));
+                                      navigateToPage(context, ChatScreen(customerId: customerInfo['uid']));
                                     },
                                     leading: CircleAvatar(
                                       radius: 30,
