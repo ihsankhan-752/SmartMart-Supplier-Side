@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:smart_mart_supplier_side/screens/custom_navbar/dashboard/widget/dashboard_screen_card.dart';
 
 import '../../../constants/app_assets.dart';
@@ -6,6 +7,7 @@ import '../../../main.dart';
 import '../chat/customer_list.dart';
 import '../orders/orders.dart';
 import '../widgets/custom_appbar_header.dart';
+import 'notification/notification_screen.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -17,10 +19,15 @@ class Dashboard extends StatelessWidget {
         CustomAppBarHeader(
           widget: Icon(Icons.dashboard),
           title: "Dashboard",
-          suffixWidget: SizedBox(
-            height: 20,
-            width: 25,
-            child: Image.asset(AppAssets.notification),
+          suffixWidget: GestureDetector(
+            onTap: () {
+              Get.to(() => NotificationScreen());
+            },
+            child: SizedBox(
+              height: 20,
+              width: 25,
+              child: Image.asset(AppAssets.notification),
+            ),
           ),
         ),
         Expanded(
