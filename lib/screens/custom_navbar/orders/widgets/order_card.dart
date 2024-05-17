@@ -25,7 +25,7 @@ class OrderCard extends StatelessWidget {
             width: Get.width,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: AppColors.primaryColor.withOpacity(0.5),
+              color: AppColors.primaryColor.withOpacity(0.2),
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -74,7 +74,7 @@ class OrderCard extends StatelessWidget {
                           orderModel.paymentStatus == 'Card' ? "Paid" : "Unpaid",
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.primaryBlack,
+                            color: orderModel.paymentStatus == 'Card' ? AppColors.primaryBlack : Colors.red,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -83,10 +83,16 @@ class OrderCard extends StatelessWidget {
                       OrderTitleValueWidget(
                         title: "Delivery Status- ",
                         value: Text(
-                          orderModel.orderStatus!,
+                          orderModel.orderStatus!.toUpperCase(),
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.primaryBlack,
+                            color: orderModel.orderStatus == 'preparing'
+                                ? Colors.teal
+                                : orderModel.orderStatus == 'shipment'
+                                    ? Colors.blue
+                                    : orderModel.orderStatus == 'deliver'
+                                        ? Color(0xff19C563)
+                                        : Colors.red,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -94,18 +100,6 @@ class OrderCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Spacer(),
-                  // Align(
-                  //   alignment: Alignment.centerRight,
-                  //   child: Text(
-                  //     "\$ " + orderModel.productPrices![i].toString() + " x " + orderModel.productQuantities![i].toString(),
-                  //     style: TextStyle(
-                  //       fontSize: 12,
-                  //       color: AppColors.primaryBlack,
-                  //       fontWeight: FontWeight.w900,
-                  //     ),
-                  //   ),
-                  // )
                 ],
               ),
             ),
