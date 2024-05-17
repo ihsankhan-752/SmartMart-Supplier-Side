@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:smart_mart_supplier_side/screens/custom_navbar/dashboard/sub_view/balance_screen.dart';
-import 'package:smart_mart_supplier_side/screens/custom_navbar/dashboard/sub_view/statics.dart';
 import 'package:smart_mart_supplier_side/screens/custom_navbar/dashboard/widget/dashboard_screen_card.dart';
 
 import '../../../constants/app_assets.dart';
@@ -51,16 +49,12 @@ class Dashboard extends StatelessWidget {
               ),
               DashBoardScreenCard(
                 icon: Icons.note_alt_outlined,
-                onPressed: () {
-                  navigateToPage(context, BalanceScreen());
-                },
+                onPressed: () {},
                 title: "Total\nOrders",
                 quantity: "2k",
               ),
               DashBoardScreenCard(
-                onPressed: () {
-                  navigateToPage(context, Statics());
-                },
+                onPressed: () {},
                 title: "Total\nSales",
                 quantity: "1K",
                 icon: Icons.bar_chart,

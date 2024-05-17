@@ -3,10 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:smart_mart_supplier_side/constants/colors.dart';
 import 'package:smart_mart_supplier_side/constants/text_styles.dart';
 import 'package:smart_mart_supplier_side/controllers/app_text_controller.dart';
-import 'package:smart_mart_supplier_side/controllers/loading_controller.dart';
-import 'package:smart_mart_supplier_side/services/store_services.dart';
-import 'package:smart_mart_supplier_side/widgets/buttons.dart';
 import 'package:smart_mart_supplier_side/widgets/text_input.dart';
+
+import '../../controllers/loading_controller.dart';
+import '../../services/store_services.dart';
+import '../../widgets/buttons.dart';
 
 class StoreAddingScreen extends StatefulWidget {
   const StoreAddingScreen({super.key});
@@ -64,36 +65,34 @@ class _StoreAddingScreenState extends State<StoreAddingScreen> {
                 controller: appTextControllers.storeDescriptionController,
                 hintText: "Fluxstore is one of the finest shopping center...",
                 maxLines: 5,
-              )
+              ),
+              SizedBox(height: 50),
+              Consumer<LoadingController>(builder: (context, loadingController, child) {
+                return loadingController.isLoading
+                    ? Container(
+                        height: 50,
+                        width: MediaQuery.sizeOf(context).width,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    : PrimaryButton(
+                        onPressed: () {
+                          StoreServices.addStore(
+                            context: context,
+                            storeName: appTextControllers.storeNameController.text,
+                            storeLocation: appTextControllers.storeLocationController.text,
+                            contact: int.tryParse(appTextControllers.storeContactController.text),
+                            description: appTextControllers.storeDescriptionController.text,
+                          );
+                        },
+                        btnColor: AppColors.primaryColor,
+                        title: "Create Account",
+                      );
+              }),
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(15),
-        child: Consumer<LoadingController>(builder: (context, loadingController, child) {
-          return loadingController.isLoading
-              ? Container(
-                  height: 50,
-                  width: MediaQuery.sizeOf(context).width,
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-              : PrimaryButton(
-                  onPressed: () {
-                    StoreServices.addStore(
-                      context: context,
-                      storeName: appTextControllers.storeNameController.text,
-                      storeLocation: appTextControllers.storeLocationController.text,
-                      contact: int.tryParse(appTextControllers.storeContactController.text),
-                      description: appTextControllers.storeDescriptionController.text,
-                    );
-                  },
-                  btnColor: AppColors.primaryColor,
-                  title: "Create Account",
-                );
-        }),
       ),
     );
   }

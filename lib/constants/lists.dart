@@ -15,5 +15,5 @@ List screens = [
 List tabs = [
   'Men',
   'Women',
-  'Kids Wear',
+  'Kids',
 ];

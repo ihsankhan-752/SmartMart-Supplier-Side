@@ -70,12 +70,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                     context: context,
                                     orderId: widget.orderModel.orderId!,
                                     orderStatus: 'shipment',
+                                    customerId: widget.orderModel.customerId!,
                                   );
                                 } else if (widget.orderModel.orderStatus == 'shipment') {
                                   OrderServices.updateOrderStatus(
                                     context: context,
                                     orderId: widget.orderModel.orderId!,
                                     orderStatus: 'deliver',
+                                    customerId: widget.orderModel.customerId!,
                                   );
                                 } else {
                                   showCustomMessage(context, "Order Delivered");
@@ -109,6 +111,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                   context: context,
                                   orderId: widget.orderModel.orderId!,
                                   orderStatus: 'cancel',
+                                  customerId: widget.orderModel.customerId!,
                                 );
                               },
                               height: 50,
