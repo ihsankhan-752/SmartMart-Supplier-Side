@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smart_mart_supplier_side/constants/app_assets.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 import '../../../constants/colors.dart';
 import '../../../main.dart';
@@ -22,7 +23,7 @@ class _CustomerChatListScreenState extends State<CustomerChatListScreen> {
     return Column(
       children: [
         CustomAppBarHeader(
-          title: "All Customers ",
+          title: "Customers Chat ",
           widget: SizedBox(height: 20, width: 25, child: Image.asset(AppAssets.chatIcon)),
         ),
         Expanded(
@@ -51,6 +52,7 @@ class _CustomerChatListScreenState extends State<CustomerChatListScreen> {
               return Container(
                 height: MediaQuery.sizeOf(context).height * 0.9,
                 child: ListView.builder(
+                  padding: EdgeInsets.zero,
                   itemCount: snapshot.data!.docs.length,
                   itemBuilder: (context, index) {
                     getUserId() {
@@ -86,34 +88,30 @@ class _CustomerChatListScreenState extends State<CustomerChatListScreen> {
                                             supplierName: customerInfo['userName'],
                                           ));
                                     },
-                                    leading: Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 05),
-                                        child: Container(
-                                          height: 50,
-                                          width: 50,
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(10),
-                                            child: Image.network(customerInfo['image'], fit: BoxFit.cover),
-                                          ),
-                                        )),
+                                    leading: CircleAvatar(
+                                      radius: 30,
+                                      child: Text(
+                                        customerInfo['userName'][0].toString().toUpperCase(),
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    ),
                                     title: Text(
-                                      customerInfo['userName'].toString().toUpperCase(),
+                                      customerInfo['userName'].toString(),
                                       style: TextStyle(
-                                        fontSize: 16,
-                                        fontStyle: FontStyle.italic,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.primaryWhite,
+                                        fontSize: 14,
+                                        color: AppColors.primaryBlack,
                                       ),
                                     ),
                                     subtitle: Text(
                                       snapshot.data!.docs[index]['msg'],
                                       style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.white60,
+                                        fontSize: 12,
+                                        color: Colors.grey,
                                       ),
                                     ),
+                                    trailing: Text(timeago.format(snapshot.data!.docs[index]['createdAt'].toDate())),
                                   ),
-                                  Divider(color: AppColors.primaryColor, thickness: 1, height: 0.1),
+                                  Divider(thickness: 0.5, height: 0.1),
                                 ],
                               ),
                             );
