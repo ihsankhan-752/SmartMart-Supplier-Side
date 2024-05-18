@@ -8,7 +8,9 @@ class DashBoardScreenCard extends StatelessWidget {
   final String? quantity;
   final Function()? onPressed;
   final IconData? icon;
-  const DashBoardScreenCard({Key? key, this.title, this.onPressed, this.icon, this.quantity}) : super(key: key);
+  final Widget? quantityWidget;
+  const DashBoardScreenCard({Key? key, this.title, this.onPressed, this.icon, this.quantity, this.quantityWidget})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class DashBoardScreenCard extends StatelessWidget {
         height: MediaQuery.sizeOf(context).width * 0.4,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: AppColors.primaryColor,
+          color: AppColors.primaryColor.withOpacity(.5),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
@@ -42,14 +44,15 @@ class DashBoardScreenCard extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 20),
-              Text(
-                quantity!,
-                style: AppTextStyles.DASHBOARD_MENU_STYLE.copyWith(
-                  color: AppColors.primaryBlack,
-                  fontSize: 35,
-                  fontFamily: 'Mirador',
-                ),
-              ),
+              quantityWidget ??
+                  Text(
+                    quantity!,
+                    style: AppTextStyles.DASHBOARD_MENU_STYLE.copyWith(
+                      color: AppColors.primaryBlack,
+                      fontSize: 35,
+                      fontFamily: 'Mirador',
+                    ),
+                  ),
             ],
           ),
         ),

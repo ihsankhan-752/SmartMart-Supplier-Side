@@ -5,9 +5,6 @@ import 'package:get/get.dart';
 import 'package:smart_mart_supplier_side/screens/custom_navbar/dashboard/widget/dashboard_screen_card.dart';
 
 import '../../../constants/app_assets.dart';
-import '../../../main.dart';
-import '../chat/customer_list.dart';
-import '../orders/orders.dart';
 import '../widgets/custom_appbar_header.dart';
 import 'notification/notification_screen.dart';
 
@@ -22,6 +19,7 @@ class _DashboardState extends State<Dashboard> {
   int _totalProducts = 0;
   int _totalOrders = 0;
   double _totalSales = 0.0;
+  double overallRating = 0.0;
 
   _getDashboardInformation() async {
     QuerySnapshot snap = await FirebaseFirestore.instance
@@ -47,9 +45,34 @@ class _DashboardState extends State<Dashboard> {
     setState(() {});
   }
 
+  Future<void> _fetchOverallRating() async {
+    double totalSum = 0.0;
+    int totalReviews = 0;
+
+    QuerySnapshot productSnap = await FirebaseFirestore.instance
+        .collection('products')
+        .where('sellerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+
+    for (var productDoc in productSnap.docs) {
+      QuerySnapshot reviewsSnap =
+          await FirebaseFirestore.instance.collection('products').doc(productDoc.id).collection('reviews').get();
+
+      for (var review in reviewsSnap.docs) {
+        totalSum += review['rating'];
+      }
+      totalReviews += reviewsSnap.size;
+    }
+
+    setState(() {
+      overallRating = totalReviews != 0 ? totalSum / totalReviews : 0.0;
+    });
+  }
+
   @override
   void initState() {
     _getDashboardInformation();
+    _fetchOverallRating();
 
     super.initState();
   }
@@ -81,9 +104,7 @@ class _DashboardState extends State<Dashboard> {
             ),
             children: [
               DashBoardScreenCard(
-                onPressed: () {
-                  navigateToPage(context, OrderScreen());
-                },
+                onPressed: () {},
                 icon: Icons.shopping_bag,
                 title: "Products",
                 quantity: _totalProducts.toString(),
@@ -91,10 +112,8 @@ class _DashboardState extends State<Dashboard> {
               DashBoardScreenCard(
                 icon: Icons.grade_outlined,
                 title: "Rating",
-                onPressed: () {
-                  navigateToPage(context, CustomerChatListScreen());
-                },
-                quantity: "05",
+                onPressed: () {},
+                quantity: "${overallRating.toStringAsFixed(1)}",
               ),
               DashBoardScreenCard(
                 icon: Icons.note_alt_outlined,
@@ -105,7 +124,7 @@ class _DashboardState extends State<Dashboard> {
               DashBoardScreenCard(
                 onPressed: () {},
                 title: "Total\nSales",
-                quantity: _totalSales.toStringAsFixed(1),
+                quantity: "\$ ${_totalSales.toStringAsFixed(1)}",
                 icon: Icons.bar_chart,
               ),
             ],

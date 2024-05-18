@@ -25,7 +25,7 @@ class ProductCard extends StatelessWidget {
         child: Container(
           height: MediaQuery.sizeOf(context).height * 0.12,
           decoration: BoxDecoration(
-            color: AppColors.primaryColor.withOpacity(0.7),
+            color: AppColors.primaryColor.withOpacity(0.5),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Padding(
